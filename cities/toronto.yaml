@@ -25,7 +25,26 @@ features:
 attribution: "Data: Toronto Transit Commission (GTFS) · City of Toronto Open Data · Bike Share Toronto (GBFS) · Map: © OpenMapTiles © OpenStreetMap contributors"
 
 feeds:
-  gtfs_static_url: https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/7795b45e-e65a-4465-81fc-c36b9dfff169/resource/cfb6b2b8-6191-41e3-bda1-b175c51148cb/download/opendata_ttc_schedules.zip
+  # TEMPORARY, 2026-11-04. The City's own "TTC Routes and Schedules" dataset — the full-network feed
+  # this line used to carry — started serving a 22-byte empty zip that morning (both the CKAN
+  # resource and the legacy opendata.toronto.ca path, same artifact), and the feed we were holding
+  # expired on 31 October, so Toronto had no service at all. MobilityData's mirror is from June and
+  # expired in it.
+  #
+  # "Surface Routes and Schedules for BusTime" is the City's other dataset and is still publishing
+  # (verified 2026-11-04: 66 MB, modified the day before, calendar 20261101–20261219): 208 bus
+  # routes, 16 streetcar, the island ferry — and NO subway. Hence `partial_note` below, which the
+  # app shows on every plan. REVERT BOTH when the full feed publishes again:
+  #   https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/7795b45e-e65a-4465-81fc-c36b9dfff169/resource/cfb6b2b8-6191-41e3-bda1-b175c51148cb/download/opendata_ttc_schedules.zip
+  gtfs_static_url: https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/bd4809dd-e289-4de8-bbde-c5c00dafbf4f/resource/28514055-d011-4ed7-8bb0-97961dfe2b66/download/surfacegtfs.zip
+  partial_note:
+    en: "This timetable covers TTC buses, streetcars and the island ferry, but not the subway: the City's full schedule feed is unavailable. Lines 1, 2 and 4 are running — they are missing from this app, not from the street."
+    es: "Este horario cubre buses, tranvías y el ferry de la isla, pero no el metro: el feed completo de la ciudad no está disponible. Las líneas 1, 2 y 4 sí están operando — faltan en esta app, no en la calle."
+    fr: "Cet horaire couvre les bus, les tramways et le traversier, mais pas le métro : le flux complet de la Ville est indisponible. Les lignes 1, 2 et 4 circulent — elles manquent dans cette app, pas dans la rue."
+    pt: "Este horário cobre ônibus, bondes e a balsa, mas não o metrô: o feed completo da cidade está indisponível. As linhas 1, 2 e 4 estão operando — faltam neste app, não na rua."
+    it: "Questo orario copre bus, tram e il traghetto, ma non la metropolitana: il feed completo della città non è disponibile. Le linee 1, 2 e 4 sono in servizio — mancano in questa app, non in strada."
+    ms: "Jadual ini merangkumi bas, trem dan feri, tetapi bukan kereta bawah tanah: suapan penuh bandar tidak tersedia. Laluan 1, 2 dan 4 masih beroperasi — ia tiada dalam app ini, bukan di jalan."
+    ar: "يغطي هذا الجدول الحافلات والترام والعبّارة، لكن ليس المترو: التغذية الكاملة للمدينة غير متوفرة. الخطوط 1 و2 و4 تعمل فعلًا — هي غائبة عن هذا التطبيق، لا عن الشارع."
   rt_positions_url: https://gtfsrt.ttc.ca/vehicles/position?format=binary
   rt_alerts_url: https://gtfsrt.ttc.ca/alerts/all?format=binary
   # Read by this API, not by OTP. None of this feed's trip_ids appear in the open-data

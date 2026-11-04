@@ -56,6 +56,12 @@ class Feeds(BaseModel):
     poll_seconds: int = 20
     static_refresh_hours: int = 24
 
+    #: Set when the feed above is knowingly not the whole network — a fallback dataset while the
+    #: agency's own is broken, say. One sentence per language code; it is attached to every plan as
+    #: a `FEED_PARTIAL` warning, so a rider is told before they trust a route. Empty for a feed that
+    #: covers everything, which is every city but an emergency.
+    partial_note: dict[str, str] = {}
+
 
 class Otp(BaseModel):
     base_url: str

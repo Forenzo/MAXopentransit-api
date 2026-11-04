@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, Query, Request
 
 from ..errors import ApiError
 from ..features import accessibility_support
+from ..feed_note import feed_warnings
 from ..forecast import (
     MAX_FANOUT,
     ForecastCache,
@@ -498,7 +499,10 @@ async def plan(
         total = len(plan_out["itineraries"])
         plan_out["itineraries"], dropped = apply_walk_limit(plan_out["itineraries"], maxWalkDistance)
         plan_out["warnings"] += walk_limit_warning(dropped, total, maxWalkDistance)
-    plan_out["warnings"] = mode_warnings + accessibility_warnings(city.id, wheelchair) + plan_out["warnings"]
+    # First in the list: a rider deciding between two routes needs to know the network is incomplete
+    # before anything else we might say about it.
+    plan_out["warnings"] = (feed_warnings(city.feeds.partial_note, locale) + mode_warnings
+                            + accessibility_warnings(city.id, wheelchair) + plan_out["warnings"])
     for it in plan_out["itineraries"]:
         for leg in it["legs"]:
             rt.with_window(leg.get("route"))
