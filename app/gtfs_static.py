@@ -78,10 +78,20 @@ def _scan_stop_times(z: zipfile.ZipFile, trip2route: dict[str, str]
 
         if simple:
             for line in txt:
-                parts = line.rstrip("\r\n").split(",")
-                if len(parts) <= need or '"' in line:
+                # A quoted field cannot be split on commas, so those lines go through the real
+                # parser. They used to be *skipped*, on the assumption that a quote in stop_times
+                # was rare: Toronto's surface feed quotes `stop_headsign` on every single row, so
+                # on 2026-11-04 this read 0 of its 2.7 M rows and said nothing — no service
+                # windows, no stop→route index, and the equivalent-services filter blind with it.
+                # Dropping data must never be the cheap path.
+                if '"' in line:
+                    for parts in csv.reader([line]):
+                        if len(parts) > need:
+                            take(parts)
                     continue
-                take(parts)
+                parts = line.rstrip("\r\n").split(",")
+                if len(parts) > need:
+                    take(parts)
         else:
             for parts in csv.reader(txt):
                 if len(parts) > need:
