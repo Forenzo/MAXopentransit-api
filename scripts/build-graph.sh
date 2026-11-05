@@ -46,7 +46,7 @@ resolve_osm() {
 # Backwards-compatible download: one feed for existing cities, multiple named feeds for
 # metropolitan regions. The graph builder and API ingest still expect CITY-gtfs.zip as
 # the primary feed; OTP transitFeeds[] can additionally reference named archives.
-"$ROOT/scripts/prepare-gtfs-sources.sh" "$CITY" "$CFG/sources.env" "$DATA" "$FORCE"
+bash "$ROOT/scripts/prepare-gtfs-sources.sh" "$CITY" "$CFG/sources.env" "$DATA" "$FORCE"
 if fresh "$REGION_PBF"; then echo "[osm] using cached $REGION_PBF"; else
   OSM_RESOLVED="$(resolve_osm "$OSM_URL")"
   echo "[osm] downloading $OSM_RESOLVED"; curl -fsSL --retry 3 -o "$REGION_PBF" "$OSM_RESOLVED"; fi
