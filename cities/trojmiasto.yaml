@@ -1,5 +1,5 @@
-# Tricity pilot: Gdańsk GTFS only until cross-operator feed ingestion is built.
-# DO NOT describe this pilot as covering Gdynia, SKM or POLREGIO yet.
+# Tricity pilot: OTP graph includes four independent GTFS feeds.
+# The API's stop index and normalized metadata still use Gdańsk only; not production-ready.
 id: trojmiasto
 name: Trójmiasto
 country: PL
@@ -26,11 +26,11 @@ feeds:
   poll_seconds: 30
   static_refresh_hours: 24
   partial_note:
-    pl: "Wersja testowa: obecnie tylko rozkłady ZTM Gdańsk. ZKM Gdynia, SKM i POLREGIO zostaną dodane później. Nie wszystkie połączenia są widoczne."
-    en: "Pilot coverage: only ZTM Gdańsk timetables are currently included. ZKM Gdynia, SKM and POLREGIO are not integrated yet. Some journeys will be missing."
+    pl: "Wersja testowa: graf zawiera czterech przewoźników, ale indeks przystanków API obejmuje na razie tylko ZTM Gdańsk. Niektóre wyniki mogą być niekompletne."
+    en: "Pilot: four operators are included in the routing graph, but the API stop index only covers ZTM Gdańsk. Some results may have incomplete metadata."
 otp:
   base_url: ${OTP_TROJMIASTO_URL:-${OTP_URL:-http://localhost:8080}}
-  feed_id: trojmiasto
+  feed_id: gdansk
 geocoder:
   photon_url: https://photon.komoot.io
 # Route types determine the icon, since one organizer operates trams and buses.
