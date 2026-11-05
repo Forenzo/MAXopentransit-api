@@ -1,0 +1,56 @@
+# Tricity pilot: Gdańsk GTFS only until cross-operator feed ingestion is built.
+# DO NOT describe this pilot as covering Gdynia, SKM or POLREGIO yet.
+id: trojmiasto
+name: Trójmiasto
+country: PL
+timezone: Europe/Warsaw
+locale: pl-PL
+center: { lat: 54.395, lon: 18.575 }
+bbox: [18.15, 53.95, 19.05, 54.87]
+default_zoom: 11
+modes: [WALK, BUS, TRAM, RAIL]
+branding:
+  primary_color: "#1676B9"
+features:
+  realtime_vehicles: true
+  trip_updates: true
+  alerts: false
+  fares: false
+  bike_share: false
+  on_demand: false
+attribution: "Rozkłady i pozycje: ZTM Gdańsk (CC BY 4.0) · Mapa: © OpenStreetMap contributors"
+feeds:
+  gtfs_static_url: https://ckan.multimediagdansk.pl/dataset/c24aa637-3619-4dc2-a171-a23eec8f2172/resource/30e783e4-2bec-4a7d-bb22-ee3e3b26ca96/download/gtfsgoogle.zip
+  rt_positions_url: http://ckan2.multimediagdansk.pl/gtfs-rt?feed=vehiclePositions
+  rt_tripupdates_url: http://ckan2.multimediagdansk.pl/gtfs-rt?feed=tripUpdates
+  poll_seconds: 30
+  static_refresh_hours: 24
+  partial_note:
+    pl: "Wersja testowa: obecnie tylko rozkłady ZTM Gdańsk. ZKM Gdynia, SKM i POLREGIO zostaną dodane później. Nie wszystkie połączenia są widoczne."
+    en: "Pilot coverage: only ZTM Gdańsk timetables are currently included. ZKM Gdynia, SKM and POLREGIO are not integrated yet. Some journeys will be missing."
+otp:
+  base_url: ${OTP_TROJMIASTO_URL:-${OTP_URL:-http://localhost:8080}}
+  feed_id: trojmiasto
+geocoder:
+  photon_url: https://photon.komoot.io
+# Route types determine the icon, since one organizer operates trams and buses.
+route_type_components:
+  "0": tram
+  "2": rail
+  "3": bus
+  "700": bus
+  "900": tram
+components:
+  - { id: tram, label: Tramwaj, color: "#D12A36", icon: tram }
+  - { id: bus, label: Autobus, color: "#1676B9", icon: bus }
+  - { id: rail, label: Pociąg, color: "#15643A", icon: rail }
+config:
+  vehicle_poll_seconds: 30
+  departures_refresh_seconds: 30
+  features: { liveVehicles: true, board: true, pois: true, followAlong: true, bike: false }
+  analytics: { enabled: false }
+links:
+  support: https://ztm.gda.pl/
+services:
+  - { id: emergency, label: "Numer alarmowy 112", icon: emergency, phone: "112", kind: call, emergency: true,
+      description: "Ogólnoeuropejski numer alarmowy." }
