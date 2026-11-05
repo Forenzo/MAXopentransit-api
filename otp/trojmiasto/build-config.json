@@ -13,8 +13,23 @@
   "transitFeeds": [
     {
       "type": "gtfs",
-      "feedId": "trojmiasto",
-      "source": "file:///var/opentripplanner/trojmiasto-gtfs.zip"
+      "feedId": "gdansk",
+      "source": "file:///var/opentripplanner/gdansk-gtfs.zip"
+    },
+    {
+      "type": "gtfs",
+      "feedId": "gdynia",
+      "source": "file:///var/opentripplanner/gdynia-gtfs.zip"
+    },
+    {
+      "type": "gtfs",
+      "feedId": "skm",
+      "source": "file:///var/opentripplanner/skm-gtfs.zip"
+    },
+    {
+      "type": "gtfs",
+      "feedId": "polregio",
+      "source": "file:///var/opentripplanner/polregio-gtfs.zip"
     }
   ]
 }
