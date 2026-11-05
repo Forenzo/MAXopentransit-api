@@ -1,0 +1,27 @@
+{
+  "server": {
+    "apiProcessingTimeout": "30s"
+  },
+  "routingDefaults": {
+    "maxDirectStreetDuration": "PT3H"
+  },
+  "updaters": [
+    {
+      "type": "stop-time-updater",
+      "frequency": "30s",
+      "url": "http://ckan2.multimediagdansk.pl/gtfs-rt?feed=tripUpdates",
+      "feedId": "trojmiasto",
+      "backwardsDelayPropagationType": "ALWAYS"
+    },
+    {
+      "type": "vehicle-positions",
+      "frequency": "30s",
+      "url": "http://ckan2.multimediagdansk.pl/gtfs-rt?feed=vehiclePositions",
+      "feedId": "trojmiasto",
+      "fuzzyTripMatching": false,
+      "features": [
+        "position"
+      ]
+    }
+  ]
+}
