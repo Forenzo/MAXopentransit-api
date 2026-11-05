@@ -1,37 +1,39 @@
-# Trójmiasto phase 1 (ZTM Gdańsk pilot)
+# Trójmiasto multi-feed pilot
 
-This is an **incomplete first build**, NOT full Tricity routing. The YAML includes a visible `FEED_PARTIAL` warning until Gdynia, SKM and POLREGIO feeds can be integrated. Never ship it as full-area coverage.
+**Status:** Graph input integration committed; end-to-end runtime validation pending.
+The routing graph now includes four *independent* GTFS inputs:
+- ZTM Gdańsk — `gdansk`
+- ZKM Gdynia — `gdynia`
+- SKM Trójmiasto — `skm`
+- POLREGIO — `polregio`
 
-## Inputs
+Unlike rewriting every source identifier into one ZIP, separate OTP `feedId` namespaces preserve source trip IDs. The ZTM Gdańsk GTFS-RT updaters are explicitly scoped to `gdansk` and must be validated against current feed trip IDs. Other operators currently have timetable-based routing without verified live feeds. The API static ingest still reads `data/trojmiasto/trojmiasto-gtfs.zip`, which the preparation step copies from the Gdańsk feed: stop searches, routes and component metadata therefore remain **incomplete** for other operators. Do not expose this pilot as a fully supported production city.
 
-- [ZTM Gdańsk GTFS](https://www.transit.land/data/feeds/f-ztm~gdansk), CC BY 4.0; operator download URL is used in config.
-- [ZTM Gdańsk GTFS-RT](https://www.transit.land/data/feeds/f-u3tm-ztm~gdansk~rt), positions and trip updates. HTTP access must be checked from the server; network policies may block it.
-- [Geofabrik Pomorskie](https://download.geofabrik.de/europe/poland/pomorskie.html), OpenStreetMap extract. Respect OpenStreetMap attribution.
+## Required dependencies and graph build
 
-## Build and test (macOS)
-
-Requires Python >=3.12, Docker, Java >=21 and enough free disk/RAM.
+On macOS with Docker, Python 3.12+, JDK 21+, and sufficient free RAM/storage:
 
 ```sh
+git checkout feature/poland-metro-regions
 make venv
 make up
 make graph CITY=trojmiasto
 CITY=trojmiasto make otp
 cp .env.example .env
 make dev
-curl 'http://localhost:8001/v1/cities'
-curl 'http://localhost:8001/v1/cities/trojmiasto'
+curl http://localhost:8001/v1/cities/trojmiasto
 ```
 
-Run a cross-town Gdańsk route through `/v1/cities/trojmiasto/plan` with valid coordinates and verify the result, route modes, display warning and walking paths. Inspect `/health` and `/v1/cities/trojmiasto/health` for feed freshness and graph matching.
+The graph build fetches all four zip archives and validates core GTFS tables before replacing cached copies. Source definitions are in `otp/trojmiasto/sources.env`, and OTP's `transitFeeds` entries are in `otp/trojmiasto/build-config.json`. Existing single-feed cities continue to use the original `GTFS_URL` setting. **No live graph has yet been built in this branch**.
 
-## Before enabling as a public metro region
+## Issues before public deployment
 
-1. Build a multi-operator GTFS acquisition and import pipeline and validate referential integrity and calendar coverage.
-2. Add ZKM Gdynia feed, SKM Trójmiasto and POLREGIO without duplicate rail trips (PKM is infrastructure, not a separate passenger operator).
-3. Ensure real-time feed trip IDs match the graph/merged static IDs; otherwise disable OTP realtime updaters rather than incorrectly attributing delays.
-4. Test missing feeds, stale RT, transfers at Gdańsk Wrzeszcz, Gdynia Główna, Sopot, Rumia, and Wejherowo; inspect OSM transfer footpaths.
-5. Implement 12-minute delay-triggered **re-evaluation** in the mobile journey monitor, retaining an existing route when no better alternative exists.
-6. Apply shortest-practical-walking preference, with no user-configured hard distance cap, using measured generalized-cost tuning rather than simply claiming that the default OTP policy does it.
+1. POLREGIO publishes **national** GTFS, which increases graph size substantially and may introduce out-of-region itineraries; implement spatial pruning after inspecting actual stop and service coverage. Do not trim stop_times blindly: it can invalidate train itineraries and stop_sequence semantics.
+2. Extend FastAPI static ingestion to index all four feeds, preserve operator identities and distinguish duplicate route/stop/trip IDs. Preserve the source-to-feed namespace in returned IDs.
+3. Verify links and ZIP service-date ranges on each production refresh; Gdynia's URL is HTTP and may need a vetted HTTPS mirror or server allowlist.
+4. Verify GTFS-Realtime trip update matching for Gdańsk and implement the required 12-minute delay / cancellation journey re-evaluation in the mobile client. Other operators need trusted live data or explicit timetable-only indicators.
+5. Test real journeys and realistic walking transfers between Gdańsk Wrzeszcz, Sopot, Gdynia Główna, Rumia and Wejherowo; compare all operators with no operator preference.
+6. Tune walking as a **soft preference**: less walking for similar ETAs without a user-selected fixed cap; document OTP internal search limits and avoid dangerous unbounded computation.
+7. Verify licensing and display correct attributions; POLREGIO specifically requires a source notice and liability disclaimer.
 
-No APK, hosted API, or trip validation is claimed at this stage.
+This is committed code, not a functioning deployed service or APK.
