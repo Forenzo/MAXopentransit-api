@@ -1,0 +1,20 @@
+{
+  "transitModelTimeZone": "Europe/Warsaw",
+  "transitServiceStart": "-P1M",
+  "transitServiceEnd": "P6M",
+  "maxDataImportIssuesPerFile": 1000,
+  "osmCacheDataInMem": true,
+  "osm": [
+    {
+      "source": "file:///var/opentripplanner/trojmiasto.osm.pbf",
+      "osmTagMapping": "default"
+    }
+  ],
+  "transitFeeds": [
+    {
+      "type": "gtfs",
+      "feedId": "trojmiasto",
+      "source": "file:///var/opentripplanner/trojmiasto-gtfs.zip"
+    }
+  ]
+}
